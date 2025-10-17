@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainLink - Connect & Collaborate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Global Styles & Colors --- */
+        :root {
+            --primary-color: #007bff; /* Bright Blue - for main buttons/links */
+            --accent-color: #ff4081; /* Hot Pink - for highlights/animations */
+            --secondary-color: #17a2b8; /* Teal/Cyan - for secondary elements */
+            --background-dark: #212529; /* Dark Gray/Black - for main background */
+            --text-light: #f8f9fa; /* Off-White */
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-color);
+        }
+
+        /* --- Animations --- */
+        @keyframes text-pop {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes color-pulse {
+            0% { border-color: var(--primary-color); }
+            100% { border-color: var(--accent-color); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slide-down {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* New animation for sidebar links - ENHANCED SLIDE */
+        @keyframes slide-in-link {
+            /* Changed from -20px to -50px for a more pronounced slide */
+            0% { opacity: 0; transform: translateX(-50px); } 
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* --- Header & Navigation (Refined Layout) --- */
+        .main-header {
+            background-color: rgba(33, 37, 41, 0.95);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between; /* Space out items */
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Centered Header Logo */
+        .header-logo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            /* Animated Gradient Effect on Logo */
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: 1001; /* Ensure logo is above other elements but below sidebar */
+        }
+        
+        /* Menu Icon is on the left, Login button is on the right */
+        .header-left {
+            order: -1; /* Pushes the menu icon to the far left */
+        }
+
+        .header-right {
+            order: 1; /* Pushes the login button to the far right */
+        }
+
+        .login-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .login-btn:hover, .cta-button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4);
+        }
+
+        .menu-icon {
+            font-size: 2rem;
+            cursor: pointer;
+            display: block;
+        }
+        
+        /* --- Sliding Sidebar (The Primary Navigation) --- */
+        .sidebar {
+            height: 100%;
+            width: 0; /* Initially closed */
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            left: 0; /* Slide in from the LEFT */
+            background-color: var(--background-dark);
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5); /* Shadow on the right */
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            display: block;
+            /* Updated transition to include the staggered slide effect */
+            transition: all 0.3s ease, padding-left 0.3s ease; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            /* Initial state for slide-in effect */
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        /* Animation delay for the "one by one" effect when menu is open (via JS) */
+        .sidebar.open a {
+            opacity: 1;
+            transform: translateX(0);
+            /* Use animation-delay instead of transition-delay for the stagger effect to work with 'forwards' */
+            animation: slide-in-link 0.4s ease-out forwards;
+        }
+
+        /* Applying increasing delay for the one-by-one effect */
+        .sidebar.open a:nth-child(1) { animation-delay: 0.1s; }
+        .sidebar.open a:nth-child(2) { animation-delay: 0.15s; }
+        .sidebar.open a:nth-child(3) { animation-delay: 0.2s; }
+        .sidebar.open a:nth-child(4) { animation-delay: 0.25s; }
+        .sidebar.open a:nth-child(5) { animation-delay: 0.3s; }
+        .sidebar.open a:nth-child(6) { animation-delay: 0.35s; }
+        .sidebar.open a:nth-child(7) { animation-delay: 0.4s; }
+
+
+        .sidebar a:hover {
+            background-color: rgba(0, 123, 255, 0.2);
+            color: var(--primary-color);
+            padding-left: 30px;
+        }
+        
+        /* --- Main Content Sections --- */
+        main {
+            padding-bottom: 50px;
+        }
+
+        .hero-section {
+            height: 80vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--background-dark) 0%, #1a1e22 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+            padding: 0 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            animation: text-pop 1s ease-out 0.5s backwards;
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+        }
+        
+        .content-division {
+            padding: 80px 5%;
+            text-align: center;
+            position: relative;
+        }
+
+        .accent-bg {
+            background-color: #2b3035;
+        }
+
+        .animated-heading {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--accent-color);
+            border-bottom: 4px solid var(--primary-color);
+            display: inline-block;
+            padding-bottom: 10px;
+            animation: color-pulse 4s infinite alternate;
+        }
+
+        /* --- Notes Section Layout (3 Vertical Divisions) --- */
+        .notes-content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .notes-type-card {
+            flex: 1; 
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            /* Added an initial border for the hover effect */
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; /* Include border/box-shadow */
+            text-align: center;
+        }
+
+        .notes-type-card:hover {
+            transform: translateY(-10px);
+            /* ENHANCEMENT: Change the border to the accent color and add a glow */
+            border-color: var(--accent-color); 
+            box-shadow: 0 15px 40px rgba(255, 64, 129, 0.5);
+        }
+
+        .notes-type-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        /* --- Specific Style for the Notes Section Browse Buttons (New) --- */
+        .notes-type-card .cta-button {
+            /* ENHANCEMENT: Use a colorful gradient background for the browse buttons */
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            color: var(--text-light); 
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            margin-top: 15px; /* Ensure spacing remains */
+        }
+
+        .notes-type-card .cta-button:hover {
+            /* Different gradient/color on hover */
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--secondary-color) 100%);
+            transform: translateY(-3px); /* Stronger lift effect */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+
+        /* --- Hosting Section Specific Style --- */
+        .topic-list {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .topic-item {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            padding: 10px 25px;
+            margin: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-item:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        /* --- Video Conference Layout (2 Vertical Big Divisions) --- */
+        .conference-wrapper {
+            display: flex;
+            justify-content: space-around;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .conference-box {
+            flex: 1;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #343a40;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .conference-box:first-child {
+            background: linear-gradient(135deg, var(--accent-color), #8d1c4b);
+        }
+
+        .conference-box:last-child {
+            background: linear-gradient(135deg, var(--primary-color), #004d99);
+        }
+        
+        .conference-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .conference-box h3 {
+            color: var(--text-light);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .conference-box input { /* Added style for input in conference section */
+            padding: 10px; 
+            margin: 15px 0; 
+            border-radius: 5px; 
+            border: none; 
+            width: 80%; 
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+        }
+
+        /* --- About Us Section Specific Style (unchanged) --- */
+        .about-us-container {
+            position: relative;
+            overflow: hidden;
+            background-color: #1a1e22;
+            padding: 100px 5%;
+        }
+
+        .about-us-bg-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15vw;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        .about-content {
+            position: relative;
+            z-index: 2;
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(33, 37, 41, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            animation: slide-down 0.8s ease-out;
+        }
+        
+        .about-content h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        /* --- Footer & Modal (unchanged) --- */
+        footer {
+            background-color: var(--background-dark);
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .social-links a {
+            font-size: 1.2rem;
+            margin: 0 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding-top: 50px;
+            animation: fade-in 0.5s;
+        }
+
+        .modal-content {
+            background-color: #343a40;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            position: relative;
+            animation: slide-down 0.5s ease-out;
+        }
+
+        .close-btn {
+            color: var(--accent-color);
+            float: right;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid var(--secondary-color);
+            background-color: rgba(0, 0, 0, 0.15);
+            color: var(--text-light);
+            border-radius: 5px;
+        }
+
+        .login-form h3 {
+            margin: 20px 0 10px;
+            color: var(--primary-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .notes-content-wrapper, .conference-wrapper {
+                flex-direction: column;
+            }
+            .notes-type-card, .conference-box {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header" id="main-header">
+        <div class="header-left">
+            <div class="menu-icon" onclick="toggleSidebar()">&#9776;</div>
+        </div>
+        <div class="header-logo">BRAINLINK</div>
+        <div class="header-right">
+            <button class="login-btn" onclick="openLoginModal()">Login / Register</button>
+        </div>
+    </header>
+
+    <div id="sidebar" class="sidebar">
+        <a href="#home" onclick="closeSidebar()">Home</a>
+        <a href="#notes" onclick="closeSidebar()">Notes Collection</a>
+        <a href="#hosting" onclick="closeSidebar()">Meeting Hosting</a>
+        <a href="#conference" onclick="closeSidebar()">Video Conference</a>
+        <a href="#about" onclick="closeSidebar()">About Us</a>
+        <a href="#contact" onclick="closeSidebar()">Contact Us</a>
+        <a href="#" class="sidebar-login" onclick="openLoginModal(); closeSidebar()">Login / Register</a>
+    </div>
+    
+    <main id="main-content" onclick="handleClickOutside(event)">
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <h1>Connect, Study, Achieve.</h1>
+                <p>Your State-of-the-Art College Collaboration Platform.</p>
+                <button class="cta-button">Start Collaborating Today</button>
+            </div>
+        </section>
+        
+        <section id="about" class="content-division about-us-container">
+            <h2 class="animated-heading">⚡ About BrainLink</h2>
+            <div class="about-us-bg-text">BRAINLINK</div>
+            <div class="about-content">
+                <h3>What We Do: Bridging College Campuses</h3>
+                <p>BrainLink is designed to break down geographical barriers for students across the state and beyond. We provide a consolidated platform for high-level academic collaboration and networking.</p>
+                <br>
+                <h3>Our Mission</h3>
+                <p>Our goal is to foster a dynamic ecosystem where students can easily share resources, organize study sessions, and connect face-to-face via video, turning college boundaries into bridges for success. We believe collective knowledge accelerates individual achievement.</p>
+            </div>
+        </section>
+        
+        <section id="notes" class="content-division">
+            <h2 class="animated-heading">Notes Collection Hub</h2>
+            
+            <div class="notes-content-wrapper">
+                <div class="notes-type-card">
+                    <h3>PDF Documents</h3>
+                    <p>High-quality lecture slides and textbook chapter scans.</p>
+                    <button class="cta-button">Browse PDFs</button>
+                </div>
+                <div class="notes-type-card">
+                    <h3>Presentation Files (PPT/Keynote)</h3>
+                    <p>Share and view academic presentations used in classes.</p>
+                    <button class="cta-button">Browse PPTs</button>
+                </div>
+                <div class="notes-type-card">
+                    <h3>Text & Code Snippets</h3>
+                    <p>Quick study guides, summaries, and programming code examples.</p>
+                    <button class="cta-button">Browse Text</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="hosting" class="content-division accent-bg">
+            <h2 class="animated-heading">📢 Host & Meet: What's on your mind?</h2>
+            <p>Select a topic to quickly notify friends and colleagues about your study or meeting session.</p>
+            <div class="card">
+                <ul class="topic-list">
+                    <li class="topic-item" onclick="openLoginModal()">📚 Study Session (On/Off Campus)</li>
+                    <li class="topic-item" onclick="openLoginModal()">☕ College Meetup (Casual)</li>
+                    <li class="topic-item" onclick="openLoginModal()">🎥 Group Video Conference</li>
+                    <li class="topic-item" onclick="openLoginModal()">📝 Exam Prep & Review</li>
+                    <li class="topic-item" onclick="openLoginModal()">⚙️ Project Collaboration</li>
+                    <li class="topic-item" onclick="openLoginModal()">💡 Ideation & Brainstorming</li>
+                </ul>
+            </div>
+            <button class="cta-button" style="margin-top: 30px;" onclick="openLoginModal()">Create Custom Meeting</button>
+        </section>
+
+        <section id="conference" class="content-division">
+            <h2 class="animated-heading">🌐 Cross-College Video Conferencing</h2>
+            <p>Connect with students from other colleges in your district and out of state.</p>
+            <div class="conference-wrapper">
+                <div class="conference-box">
+                    <h3>Host a New Meeting</h3>
+                    <p>Start a spontaneous or scheduled video session for your group.</p>
+                    <button class="cta-button" style="background-color: var(--text-light); color: var(--accent-color); margin-top: 15px;">Start Room</button>
+                </div>
+                <div class="conference-box">
+                    <h3>Join an Existing Meeting</h3>
+                    <p>Enter a room ID or browse active sessions in the network.</p>
+                    <input type="text" placeholder="Enter Room ID">
+                    <button class="cta-button" style="background-color: var(--text-light); color: var(--primary-color);">Join Conference</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="content-division">
+            <h2 class="animated-heading">📧 Contact Us</h2>
+            <p>Need support or want to partner? Reach out to the BrainLink team!</p>
+        </section>
+        
+    </main>
+
+    <footer>
+        <p>&copy; 2025 BrainLink. All rights reserved. | <a href="#">Privacy Policy</a></p>
+        <div class="social-links">
+            <a href="#" style="color: #3b5998;">F</a> 
+            <a href="#" style="color: #55acee;">T</a> 
+            <a href="#" style="color: #c32aa3;">I</a>
+        </div>
+    </footer>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+            <h2>BrainLink Access</h2>
+            <form class="login-form">
+                <h3>Register Now</h3>
+                <input type="text" placeholder="Full Name" required>
+                <input type="tel" placeholder="Phone Number" required>
+                <input type="email" placeholder="Email Address" required>
+                <input type="password" placeholder="Set Password" required>
+                <button type="submit" class="cta-button">Register Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- Function to explicitly close the Sidebar Menu ---
+        function closeSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.style.width = "0";
+            sidebar.classList.remove("open");
+        }
+        
+        // --- Function to toggle the Sliding Sidebar Menu ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            // Check current width and if the 'open' class is present
+            if (sidebar.style.width === "250px") {
+                closeSidebar(); // Use the close function
+            } else {
+                sidebar.style.width = "250px"; 
+                // Add class to trigger the staggered slide-in effect on links
+                sidebar.classList.add("open"); 
+            }
+        }
+        
+        // --- Function to close sidebar when clicking the main content area ---
+        function handleClickOutside(event) {
+            const sidebar = document.getElementById("sidebar");
+            const menuIcon = document.querySelector(".menu-icon");
+            const header = document.getElementById("main-header");
+            const loginModal = document.getElementById("login-modal");
+            
+            // Check if the sidebar is open
+            if (sidebar.style.width === "250px") {
+                // Check if the click is NOT inside the sidebar, NOT inside the menu icon, and NOT inside the main header buttons.
+                // We use closest to check if the target is within any of the defined elements.
+                if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && !header.contains(event.target) && !loginModal.contains(event.target)) {
+                    closeSidebar();
+                }
+            }
+        }
+        
+        // --- Functions to handle the Login/Registration Modal ---
+        function openLoginModal() {
+            document.getElementById("login-modal").style.display = "block";
+        }
+
+        function closeLoginModal() {
+            document.getElementById("login-modal").style.display = "none";
+        }
+
+        // Close the modal if the user clicks anywhere outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById("login-modal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
