@@ -5,16 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrainLink - Connect & Collaborate</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
         /* --- Global Styles & Colors --- */
         :root {
-            --primary-color: #007bff; /* Bright Blue - for main buttons/links */
+            --primary-color: #007bff; /* Bright Blue - for main buttons/links (Chat Icon/Send Button) */
             --accent-color: #ff4081; /* Hot Pink - for highlights/animations */
             --secondary-color: #17a2b8; /* Teal/Cyan - for secondary elements */
             --background-dark: #212529; /* Dark Gray/Black - for main background */
-            --text-light: #f8f9fa; /* Off-White */
+            --text-light: #f8f9fa; /* Off-White (used for text and sender bubble background) */
             --font-family: 'Poppins', sans-serif;
+
+            /* --- NEW CHAT-SPECIFIC VARIABLES (derived from main theme) --- */
+            --chat-receiver-bubble-bg: #343a40; /* Darker grey for support agent bubble */
+            --chat-sender-bubble-bg: var(--text-light); /* White/Light color for sender bubble */
+            --chat-shadow-color: rgba(0, 0, 0, 0.4);
+            --border-radius: 25px;
         }
 
         * {
@@ -24,25 +31,189 @@
             scroll-behavior: smooth;
         }
 
+        /* --- UPDATED BODY STYLES FOR ANIMATION --- */
         body {
             font-family: var(--font-family);
-            background-color: var(--background-dark);
+            background-color: #111417; /* Base color: Slightly darker for animation contrast */
             color: var(--text-light);
             line-height: 1.6;
             overflow-x: hidden;
+            position: relative; /* Needed for the pseudo-element overlay */
+        }
+        
+        /* Fixed gradient overlay for depth and color uniformity */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Apply a subtle dark gradient overlay to unify the look */
+            background: radial-gradient(circle at center, rgba(17, 20, 23, 0.95) 0%, rgba(17, 20, 23, 1) 100%);
+            z-index: -2; /* Behind the particles and content */
+        }
+        
+        /* Ensure all content layers sit above the animated background */
+        .main-header, main, footer {
+            position: relative; 
+            z-index: 10;
+        }
+        
+        /* Make content sections slightly translucent to allow background subtle movement */
+        .main-header {
+            background-color: rgba(33, 37, 41, 0.98); /* Near-opaque */
+        }
+        
+        /* Hero section is transparent to show the moving background */
+        .hero-section {
+            background: transparent; 
         }
 
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
+        /* --- MODIFICATION 1: About Us Section Background Removal --- */
+        .about-us-container {
+            background-color: transparent; /* Allows animated background to show through */
+        }
+        
+        /* --- MODIFICATION 2: Host & Meet Section Background Removal --- */
+        .accent-bg {
+            background-color: transparent; /* Allows animated background to show through */
         }
 
-        a:hover {
-            color: var(--accent-color);
+        .notes-type-card { background-color: rgba(255, 255, 255, 0.08); }
+        .conference-box { background: #343a40; } /* Keep gradient for color */
+
+
+        /* --- NEW: Animated Background Container --- */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Behind the content, above the body base color */
+            pointer-events: none; /* Crucial so it doesn't block clicks */
         }
 
-        /* --- Animations --- */
+        .animated-bg li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+            opacity: 0;
+            border-radius: 50%;
+        }
+
+        /* Color and size randomization for particles using theme colors */
+        .animated-bg li:nth-child(1) {
+            left: 25%;
+            width: 80px; height: 80px;
+            background: rgba(0, 123, 255, 0.3); /* Primary Blue */
+            animation-delay: 0s;
+        }
+
+        .animated-bg li:nth-child(2) {
+            left: 10%;
+            width: 20px; height: 20px;
+            background: rgba(255, 64, 129, 0.2); /* Accent Pink */
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+
+        .animated-bg li:nth-child(3) {
+            left: 70%;
+            width: 20px; height: 20px;
+            background: rgba(23, 162, 184, 0.4); /* Secondary Teal */
+            animation-delay: 4s;
+        }
+
+        .animated-bg li:nth-child(4) {
+            left: 40%;
+            width: 60px; height: 60px;
+            background: rgba(0, 123, 255, 0.15); /* Primary Blue */
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+
+        .animated-bg li:nth-child(5) {
+            left: 65%;
+            width: 20px; height: 20px;
+            background: rgba(255, 64, 129, 0.3); /* Accent Pink */
+            animation-delay: 0s;
+        }
+
+        .animated-bg li:nth-child(6) {
+            left: 75%;
+            width: 110px; height: 110px;
+            background: rgba(23, 162, 184, 0.1); /* Secondary Teal */
+            animation-delay: 3s;
+            animation-duration: 35s;
+        }
+
+        .animated-bg li:nth-child(7) {
+            left: 35%;
+            width: 150px; height: 150px;
+            background: rgba(0, 123, 255, 0.25); /* Primary Blue */
+            animation-delay: 7s;
+        }
+
+        .animated-bg li:nth-child(8) {
+            left: 50%;
+            width: 25px; height: 25px;
+            background: rgba(255, 64, 129, 0.4); /* Accent Pink */
+            animation-delay: 15s;
+            animation-duration: 45s;
+        }
+
+        .animated-bg li:nth-child(9) {
+            left: 20%;
+            width: 15px; height: 15px;
+            background: rgba(23, 162, 184, 0.2); /* Secondary Teal */
+            animation-delay: 2s;
+            animation-duration: 35s;
+        }
+
+        .animated-bg li:nth-child(10) {
+            left: 85%;
+            width: 150px; height: 150px;
+            background: rgba(0, 123, 255, 0.1); /* Primary Blue */
+            animation-delay: 11s;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+                border-radius: 0; /* Start as squares */
+            }
+            50% {
+                opacity: 1; /* Fade in partially through the travel */
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%; /* End as circles */
+            }
+        }
+        
+        /* --- Global Content Shift when Chat is Maximized --- */
+        body.chat-maximized main {
+            width: 50vw; /* Shrink main content to the left half */
+            transition: width 0.5s ease-in-out; 
+            overflow: hidden; /* Prevent horizontal scrollbar on main content */
+        }
+        body.chat-maximized .main-header,
+        body.chat-maximized footer {
+            width: 50vw;
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* --- Animations (Existing) --- */
         @keyframes text-pop {
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -63,24 +234,28 @@
             100% { transform: translateY(0); opacity: 1; }
         }
         
-        /* New animation for sidebar links - ENHANCED SLIDE */
         @keyframes slide-in-link {
-            /* Changed from -20px to -50px for a more pronounced slide */
             0% { opacity: 0; transform: translateX(-50px); } 
             100% { opacity: 1; transform: translateX(0); }
         }
+        
+        @keyframes slide-in-from-left {
+            0% { opacity: 0; transform: translateX(-100%); }
+            100% { transform: translateX(0); }
+        }
 
-        /* --- Header & Navigation (Refined Layout) --- */
+
+        /* --- Header & Navigation (Refined Layout) (Existing) --- */
         .main-header {
-            background-color: rgba(33, 37, 41, 0.95);
             padding: 15px 5%;
             display: flex;
-            justify-content: space-between; /* Space out items */
+            justify-content: space-between; 
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 1000;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: width 0.5s ease-in-out; 
         }
         
         /* Centered Header Logo */
@@ -91,20 +266,20 @@
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: 1px;
-            /* Animated Gradient Effect on Logo */
             background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            z-index: 1001; /* Ensure logo is above other elements but below sidebar */
+            z-index: 1001; 
         }
         
-        /* Menu Icon is on the left, Login button is on the right */
         .header-left {
-            order: -1; /* Pushes the menu icon to the far left */
+            order: -1; 
+            display: flex; 
+            align-items: center; 
         }
 
         .header-right {
-            order: 1; /* Pushes the login button to the far right */
+            order: 1; 
         }
 
         .login-btn {
@@ -130,19 +305,24 @@
             display: block;
         }
         
-        /* --- Sliding Sidebar (The Primary Navigation) --- */
+        /* --- Sliding Sidebar --- */
         .sidebar {
             height: 100%;
-            width: 0; /* Initially closed */
+            width: 250px; 
             position: fixed;
             z-index: 1001;
             top: 0;
-            left: 0; /* Slide in from the LEFT */
+            left: 0; 
             background-color: var(--background-dark);
             overflow-x: hidden;
-            transition: 0.5s;
+            transform: translateX(-250px); 
+            transition: transform 0.5s ease-in-out; 
             padding-top: 60px;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5); /* Shadow on the right */
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5); 
+        }
+        
+        .sidebar.open {
+            transform: translateX(0); 
         }
 
         .sidebar a {
@@ -151,30 +331,25 @@
             font-size: 1.2rem;
             color: var(--text-light);
             display: block;
-            /* Updated transition to include the staggered slide effect */
             transition: all 0.3s ease, padding-left 0.3s ease; 
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            /* Initial state for slide-in effect */
             opacity: 0;
-            transform: translateX(-20px);
+            transform: translateX(-50px); 
         }
         
-        /* Animation delay for the "one by one" effect when menu is open (via JS) */
         .sidebar.open a {
             opacity: 1;
             transform: translateX(0);
-            /* Use animation-delay instead of transition-delay for the stagger effect to work with 'forwards' */
-            animation: slide-in-link 0.4s ease-out forwards;
+            animation: slide-in-link 0.5s ease-out forwards;
         }
 
-        /* Applying increasing delay for the one-by-one effect */
         .sidebar.open a:nth-child(1) { animation-delay: 0.1s; }
-        .sidebar.open a:nth-child(2) { animation-delay: 0.15s; }
-        .sidebar.open a:nth-child(3) { animation-delay: 0.2s; }
-        .sidebar.open a:nth-child(4) { animation-delay: 0.25s; }
-        .sidebar.open a:nth-child(5) { animation-delay: 0.3s; }
-        .sidebar.open a:nth-child(6) { animation-delay: 0.35s; }
-        .sidebar.open a:nth-child(7) { animation-delay: 0.4s; }
+        .sidebar.open a:nth-child(2) { animation-delay: 0.2s; }
+        .sidebar.open a:nth-child(3) { animation-delay: 0.3s; }
+        .sidebar.open a:nth-child(4) { animation-delay: 0.4s; }
+        .sidebar.open a:nth-child(5) { animation-delay: 0.5s; }
+        .sidebar.open a:nth-child(6) { animation-delay: 0.6s; }
+        .sidebar.open a:nth-child(7) { animation-delay: 0.7s; }
 
 
         .sidebar a:hover {
@@ -183,9 +358,14 @@
             padding-left: 30px;
         }
         
-        /* --- Main Content Sections --- */
+        /* --- Main Content Sections (Existing) --- */
         main {
             padding-bottom: 50px;
+            transition: width 0.5s ease-in-out; 
+        }
+        
+        footer {
+            transition: width 0.5s ease-in-out; 
         }
 
         .hero-section {
@@ -195,9 +375,9 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(135deg, var(--background-dark) 0%, #1a1e22 100%);
             position: relative;
             overflow: hidden;
+            padding-top: 50px; 
         }
 
         .hero-content {
@@ -225,10 +405,6 @@
             position: relative;
         }
 
-        .accent-bg {
-            background-color: #2b3035;
-        }
-
         .animated-heading {
             font-size: 2.5rem;
             margin-bottom: 40px;
@@ -239,7 +415,7 @@
             animation: color-pulse 4s infinite alternate;
         }
 
-        /* --- Notes Section Layout (3 Vertical Divisions) --- */
+        /* --- Notes Section Layout (3 Vertical Divisions) (Existing) --- */
         .notes-content-wrapper {
             display: flex;
             justify-content: space-between;
@@ -250,19 +426,17 @@
 
         .notes-type-card {
             flex: 1; 
-            background-color: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            /* Added an initial border for the hover effect */
             border: 2px solid rgba(255, 255, 255, 0.1); 
-            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; /* Include border/box-shadow */
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; 
             text-align: center;
+            background-color: rgba(255, 255, 255, 0.08); /* Slightly translucent */
         }
 
         .notes-type-card:hover {
             transform: translateY(-10px);
-            /* ENHANCEMENT: Change the border to the accent color and add a glow */
             border-color: var(--accent-color); 
             box-shadow: 0 15px 40px rgba(255, 64, 129, 0.5);
         }
@@ -272,26 +446,54 @@
             margin-bottom: 15px;
         }
 
-        /* --- Specific Style for the Notes Section Browse Buttons (New) --- */
-        .notes-type-card .cta-button {
-            /* ENHANCEMENT: Use a colorful gradient background for the browse buttons */
+
+        .hero-content .cta-button {
             background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
             color: var(--text-light); 
             border: none;
             padding: 10px 20px;
             font-weight: 600;
-            margin-top: 15px; /* Ensure spacing remains */
+            margin-top: 15px; 
+           }
+
+
+        /* --- Specific Style for the Notes Section Browse Buttons (New) --- */
+        .notes-type-card .cta-button {
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            color: var(--text-light); 
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            margin-top: 15px; 
         }
 
         .notes-type-card .cta-button:hover {
-            /* Different gradient/color on hover */
             background: linear-gradient(90deg, var(--accent-color) 0%, var(--secondary-color) 100%);
-            transform: translateY(-3px); /* Stronger lift effect */
+            transform: translateY(-3px); 
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Standard CTA Button definition for the new buttons */
+        .cta-button {
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            color: var(--text-light); 
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            margin-top: 15px; 
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background: linear-gradient(90deg, var(--accent-color) 0%, var(--secondary-color) 100%);
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(255, 64, 129, 0.4);
         }
 
 
-        /* --- Hosting Section Specific Style --- */
+        /* --- Hosting Section Specific Style (Existing) --- */
         .topic-list {
             list-style: none;
             padding: 0;
@@ -321,7 +523,7 @@
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
         }
 
-        /* --- Video Conference Layout (2 Vertical Big Divisions) --- */
+        /* --- Video Conference Layout (2 Vertical Big Divisions) (Existing) --- */
         .conference-wrapper {
             display: flex;
             justify-content: space-around;
@@ -363,7 +565,7 @@
             margin-bottom: 15px;
         }
 
-        .conference-box input { /* Added style for input in conference section */
+        .conference-box input { 
             padding: 10px; 
             margin: 15px 0; 
             border-radius: 5px; 
@@ -378,7 +580,6 @@
         .about-us-container {
             position: relative;
             overflow: hidden;
-            background-color: #1a1e22;
             padding: 100px 5%;
         }
 
@@ -402,6 +603,7 @@
             text-align: left;
             max-width: 800px;
             margin: 0 auto;
+            /* Keep this background for readability against the moving background */
             background-color: rgba(33, 37, 41, 0.8);
             padding: 30px;
             border-radius: 10px;
@@ -421,13 +623,66 @@
             padding: 20px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.9rem;
+            transition: width 0.5s ease-in-out; 
         }
         
+        /* --- NEW STYLES FOR BANNER (Existing) --- */
+        .powered-by-banner {
+            background-color: #2b3035; 
+            padding: 15px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .powered-by-banner p {
+            color: var(--secondary-color);
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .banner-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px; 
+        }
+
+        .banner-logos a {
+            display: inline-block;
+            font-size: 2.2rem; 
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: var(--text-light); 
+        }
+        
+        /* Specific Icon Colors Blending with Theme */
+        .banner-logos .icon-g { 
+            color: #4285F4; 
+        }
+
+        .banner-logos .icon-a { 
+            color: #FF9900; 
+        }
+        
+        .banner-logos .icon-f { 
+            color: #17A2B8; 
+        }
+        
+        .banner-logos a:hover {
+            transform: scale(1.15); 
+        }
+
+
         .social-links a {
             font-size: 1.2rem;
             margin: 0 10px;
         }
 
+        /* --- Default Modal Styles (Applies to both Login and Notes Filter) (Existing) --- */
         .modal {
             display: none;
             position: fixed;
@@ -450,7 +705,55 @@
             max-width: 500px;
             border-radius: 10px;
             position: relative;
-            animation: slide-down 0.5s ease-out;
+            animation: slide-down 0.5s ease-out; 
+        }
+        
+        /* --- NEW: Specific Notes Filter Modal Animation (Existing) --- */
+        #notes-filter-modal .modal-content {
+            animation: slide-in-from-left 0.6s ease-out;
+            border-left: 5px solid var(--accent-color); 
+        }
+        
+        /* --- Form Input Styles (General for modals) (Existing) --- */
+        .login-form input, .notes-filter-form select, .notes-filter-form button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid var(--secondary-color);
+            background-color: rgba(0, 0, 0, 0.15);
+            color: var(--text-light);
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            -webkit-appearance: none; 
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .login-form input:focus, .notes-filter-form select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(255, 64, 129, 0.6);
+            outline: none;
+        }
+        
+        .login-form h3, .notes-filter-form h3 {
+            margin: 20px 0 10px;
+            color: var(--primary-color);
+        }
+        
+        /* --- Select Tag Custom Arrow (Optional but helpful for dark theme) (Existing) --- */
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: '\25BC'; 
+            font-size: 1rem;
+            color: var(--text-light);
+            right: 20px;
+            top: 25px;
+            padding: 0 0 2px;
+            position: absolute;
+            pointer-events: none;
         }
 
         .close-btn {
@@ -466,22 +769,7 @@
             color: var(--primary-color);
         }
 
-        .login-form input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 1px solid var(--secondary-color);
-            background-color: rgba(0, 0, 0, 0.15);
-            color: var(--text-light);
-            border-radius: 5px;
-        }
-
-        .login-form h3 {
-            margin: 20px 0 10px;
-            color: var(--primary-color);
-        }
-
-        /* Responsive adjustments */
+        /* Responsive adjustments (Existing) */
         @media (max-width: 900px) {
             .notes-content-wrapper, .conference-wrapper {
                 flex-direction: column;
@@ -490,9 +778,598 @@
                 margin-bottom: 20px;
             }
         }
+        
+        /* ============================================== */
+        /* --- CHAT WIDGET STYLES (UPDATED) --- */
+        /* ============================================== */
+
+        /* --- Global Widget Positioning (Default - Bottom Right) --- */
+        #chat-widget {
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            z-index: 10001; 
+            margin-left: 0; 
+        }
+
+        /* --- Chat Icon (Globe) Styling --- */
+        #chat-icon {
+            width: 50px; 
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color); 
+            color: var(--text-light); 
+            font-size: 22px; 
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px var(--chat-shadow-color); 
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chat-icon:hover {
+            background-color: var(--accent-color); 
+            transform: scale(1.1); 
+        }
+
+        /* --- Chat Window Styling (Default - Small) --- */
+        #chat-window {
+            width: 300px;
+            height: 400px;
+            background-color: #2b3035; 
+            border-radius: 15px;
+            box-shadow: 0 8px 16px var(--chat-shadow-color);
+            
+            position: absolute; 
+            bottom: 60px; 
+            right: 0; 
+            top: auto; 
+            left: auto; 
+            
+            display: flex;
+            flex-direction: column;
+            
+            transform: scale(0.5) translateY(50px); 
+            opacity: 0;
+            transform-origin: bottom right; 
+            
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out, width 0.5s ease-in-out, height 0.5s ease-in-out, border-radius 0.5s ease-in-out;
+            pointer-events: none; 
+            z-index: 10000;
+        }
+
+        #chat-window.visible {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: all; 
+        }
+        
+        /* --- Maximized Chat State (Covers Right 50% of the viewport) --- */
+        #chat-window.maximized {
+            position: fixed; 
+            top: 0;
+            right: 0;
+            bottom: 0; 
+            left: auto;
+            width: 50vw; 
+            height: 100vh; 
+            transform: scale(1) translateY(0); 
+            border-radius: 0; 
+            box-shadow: -10px 0 20px rgba(0, 0, 0, 0.5); 
+        }
+
+
+        /* --- Header Styling --- */
+        #chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid #444;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        
+        #chat-window.maximized #chat-header {
+            border-top-left-radius: 0; 
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #maximize-chat, #close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #maximize-chat:hover, #close-chat:hover {
+            color: var(--secondary-color);
+        }
+
+        #chat-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        /* --- Messages Area Styling (UNCHANGED BELOW) --- */
+        #chat-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: var(--background-dark); 
+        }
+
+        /* --- Individual Message Styling --- */
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-end;
+        }
+
+        .avatar {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Avatar Placement and Color */
+        .receiver-avatar {
+            background-color: var(--secondary-color);
+            order: 1;
+            margin-right: 10px;
+            color: var(--text-light);
+        }
+
+        .sender-avatar {
+            background-color: var(--accent-color);
+            order: 2;
+            margin-left: 10px;
+            color: var(--text-light);
+        }
+
+        /* --- Chat Bubble Styling (Core) --- */
+        .bubble {
+            padding: 10px 15px;
+            max-width: 75%;
+            line-height: 1.4;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word; 
+            font-size: 0.9rem;
+        }
+
+        .received .bubble {
+            background-color: var(--chat-receiver-bubble-bg); 
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 5px; 
+            order: 2;
+        }
+
+        .sent {
+            justify-content: flex-end; 
+        }
+
+        .sent .bubble {
+            background-color: var(--chat-sender-bubble-bg);
+            color: #333; 
+            border-radius: var(--border-radius) var(--border-radius) 5px var(--border-radius); 
+            order: 1;
+        }
+
+        /* Image within chat bubble */
+        .bubble img {
+            max-width: 100%;
+            height: auto;
+            display: block; 
+            border-radius: 8px;
+            margin-top: 5px; 
+        }
+
+        /* --- Input Bar Styling --- */
+        #chat-input-container {
+            display: flex;
+            align-items: center; 
+            padding: 10px;
+            border-top: 1px solid #444;
+            background-color: #2b3035; 
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        #chat-window.maximized #chat-input-container {
+             border-bottom-left-radius: 0; 
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #444;
+            background-color: #343a40; 
+            color: var(--text-light);
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        /* Image Upload and Send Buttons */
+        #image-upload-label,
+        #send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px; 
+            flex-shrink: 0; 
+        }
+
+        #image-upload-label:hover,
+        #send-button:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Hide the actual file input */
+        #image-upload {
+            display: none;
+        }
+        
+        /* ================================================= */
+        /* --- NEW SEARCH BAR STYLES (FROM NEW.HTML) --- */
+        /* ================================================= */
+
+        /* Container for Centering the Search Bar on the Hero */
+        .search-bar-wrapper {
+            position: relative; 
+            width: 100%;
+            z-index: 5; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 5%;
+            margin-top: 30px; 
+        }
+
+        /* The Animated Border Effect (The key) */
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 3px; 
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); 
+            z-index: 1;
+            background-color: #343a40; 
+            max-width: 400px; 
+            width: 100%; 
+        }
+
+        /* The Animated Border Effect (The key) */
+        .search-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #ff0077, #00f7ff, #7700ff, #ff0077);
+            background-size: 300% 100%; 
+            z-index: -1; 
+            animation: wavyBorder 4s ease-in-out infinite; 
+            filter: blur(3px); 
+        }
+
+        /* The Animation Keyframes */
+        @keyframes wavyBorder {
+            0% {
+                background-position: 0% 50%;
+                transform: scale(1.02) translate(0, -1px); 
+            }
+            50% {
+                background-position: 100% 50%;
+                transform: scale(1.02) translate(0, 1px); 
+            }
+            100% {
+                background-position: 0% 50%;
+                transform: scale(1.02) translate(0, -1px); 
+            }
+        }
+
+        /* --- Inner Search Elements --- */
+        .search-content {
+            display: flex;
+            align-items: center;
+            border-radius: 27px; 
+            overflow: hidden;
+            background-color: #343a40; 
+            width: 100%;
+        }
+
+        /* --- Search Input Field --- */
+        .search-input {
+            border: none;
+            background: transparent;
+            padding: 10px 18px;
+            font-size: 16px;
+            color: var(--text-light); 
+            outline: none;
+            width: 100%; 
+        }
+
+        .search-input::placeholder {
+            color: #aaa;
+        }
+
+        /* --- Search Button (Magnifier) --- */
+        .search-button {
+            border: none;
+            background: transparent;
+            color: #7700ff; 
+            font-size: 18px;
+            padding: 10px 15px;
+            cursor: pointer;
+            outline: none;
+            transition: color 0.3s ease;
+            flex-shrink: 0; 
+        }
+
+        .search-button:hover {
+            color: #ff0077;
+        }
+        
+        /* ================================================= */
+        /* --- NEW STYLES FOR CONTACT US FORM (BLENDED) --- */
+        /* ================================================= */
+
+        /* Override section-level padding for the new layout */
+        #contact.content-division {
+            padding-top: 50px; 
+        }
+        
+        .contact-container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            gap: 80px;
+            padding: 40px 0; 
+            margin: 0 auto;
+            text-align: left; 
+        }
+
+        /* --- Left Column (Contact Info) --- */
+        .contact-info {
+            flex: 1; 
+        }
+
+        .main-heading {
+            font-family: var(--font-family);
+            color: var(--accent-color); 
+            font-size: 2.5em; 
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .sub-heading {
+            color: var(--secondary-color); 
+            font-style: italic;
+            font-size: 1.1em;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .intro-text {
+            color: var(--text-light); 
+            margin: 0 0 40px 0;
+            line-height: 1.5;
+            max-width: 350px;
+            font-size: 1em;
+        }
+
+        .email-link {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .email-link .icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+            color: var(--primary-color); 
+        }
+
+        .email-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 1em;
+            transition: color 0.3s ease;
+        }
+        
+        .email-link a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .social-links .icon {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em; 
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .social-links .icon:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--background-dark);
+            transform: scale(1.1);
+        }
+
+        /* --- Right Column (Contact Form) --- */
+
+        .contact-form {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            background-color: #2b3035; 
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px; 
+            margin-bottom: 25px;
+        }
+
+        .contact-form input[type="text"],
+        .contact-form input[type="email"] {
+            flex: 1; 
+            padding: 10px 0; 
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3); 
+            background-color: transparent;
+            font-size: 1em;
+            color: var(--text-light);
+            transition: border-color 0.3s ease;
+        }
+        
+        .contact-form input[type="text"]:focus,
+        .contact-form input[type="email"]:focus,
+        .contact-form textarea:focus {
+             border-color: var(--accent-color);
+             outline: none;
+        }
+        
+        /* Style for the Message textarea */
+        .contact-form textarea {
+            flex: 1;
+            resize: none; 
+            height: 150px; 
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            font-size: 1em;
+            font-family: var(--font-family); 
+            margin-bottom: 30px; 
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder {
+            color: #aaa; 
+            font-size: 0.9em;
+        }
+
+        /* Send Button - Reusing existing cta-button style for consistency */
+        .contact-form .send-button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8em;
+            align-self: flex-end; 
+            text-transform: uppercase; 
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-form .send-button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4);
+        }
+
+        /* Responsive adjustments for Contact Form */
+        @media (max-width: 768px) {
+            .contact-container {
+                flex-direction: column; 
+                gap: 40px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .form-row input {
+                margin-bottom: 15px;
+            }
+
+            .contact-form .send-button {
+                align-self: stretch; 
+            }
+        }
+        
+        /* ================================================= */
+        /* --- INTEGRATED TEXT CHANGER STYLES (UPDATED) --- */
+        /* ================================================= */
+        .text-changer-container {
+            margin-top: -15px; 
+            margin-bottom: 20px;
+            padding: 0; 
+            border-radius: 0; 
+            background-color: transparent; 
+            display: inline-block; 
+            animation: fade-in 1s ease-out 1.5s backwards;
+        }
+
+        #changingText {
+            font-size: 1.2em; 
+            font-weight: 600;
+            color: var(--accent-color); 
+            transition: opacity 0.5s ease-in-out; 
+            display: block; 
+        }
+        
     </style>
 </head>
 <body>
+    <ul class="animated-bg">
+        <li></li><li></li><li></li><li></li><li></li>
+        <li></li><li></li><li></li><li></li><li></li>
+    </ul>
 
     <header class="main-header" id="main-header">
         <div class="header-left">
@@ -513,18 +1390,33 @@
         <a href="#contact" onclick="closeSidebar()">Contact Us</a>
         <a href="#" class="sidebar-login" onclick="openLoginModal(); closeSidebar()">Login / Register</a>
     </div>
-    
-    <main id="main-content" onclick="handleClickOutside(event)">
+
+
+<main id="main-content" onclick="handleClickOutside(event)">
         <section id="home" class="hero-section">
             <div class="hero-content">
                 <h1>Connect, Study, Achieve.</h1>
                 <p>Your State-of-the-Art College Collaboration Platform.</p>
-                <button class="cta-button">Start Collaborating Today</button>
-            </div>
+               
+                <div class="text-changer-container">
+                    <p id="changingText">Initializing...</p>
+                </div>
+                <div class="search-bar-wrapper">
+                    <div class="search-container">
+                        <div class="search-content">
+                            <input type="text" class="search-input" placeholder="Search continuously...">
+                            <button type="submit" class="search-button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
         </section>
+    
         
         <section id="about" class="content-division about-us-container">
-            <h2 class="animated-heading">⚡ About BrainLink</h2>
+            <h2 class="animated-heading">? About BrainLink</h2>
             <div class="about-us-bg-text">BRAINLINK</div>
             <div class="about-content">
                 <h3>What We Do: Bridging College Campuses</h3>
@@ -542,68 +1434,112 @@
                 <div class="notes-type-card">
                     <h3>PDF Documents</h3>
                     <p>High-quality lecture slides and textbook chapter scans.</p>
-                    <button class="cta-button">Browse PDFs</button>
+                    <button class="cta-button" onclick="openNotesFilterModal('PDF Documents')">Browse PDFs</button>
                 </div>
                 <div class="notes-type-card">
                     <h3>Presentation Files (PPT/Keynote)</h3>
                     <p>Share and view academic presentations used in classes.</p>
-                    <button class="cta-button">Browse PPTs</button>
+                    <button class="cta-button" onclick="openNotesFilterModal('Presentation Files')">Browse PPTs</button>
                 </div>
                 <div class="notes-type-card">
                     <h3>Text & Code Snippets</h3>
                     <p>Quick study guides, summaries, and programming code examples.</p>
-                    <button class="cta-button">Browse Text</button>
+                    <button class="cta-button" onclick="openNotesFilterModal('Text & Code Snippets')">Browse Text</button>
                 </div>
             </div>
         </section>
 
         <section id="hosting" class="content-division accent-bg">
-            <h2 class="animated-heading">📢 Host & Meet: What's on your mind?</h2>
+            <h2 class="animated-heading">?? Host & Meet: What's on your mind?</h2>
             <p>Select a topic to quickly notify friends and colleagues about your study or meeting session.</p>
             <div class="card">
                 <ul class="topic-list">
-                    <li class="topic-item" onclick="openLoginModal()">📚 Study Session (On/Off Campus)</li>
-                    <li class="topic-item" onclick="openLoginModal()">☕ College Meetup (Casual)</li>
-                    <li class="topic-item" onclick="openLoginModal()">🎥 Group Video Conference</li>
-                    <li class="topic-item" onclick="openLoginModal()">📝 Exam Prep & Review</li>
-                    <li class="topic-item" onclick="openLoginModal()">⚙️ Project Collaboration</li>
-                    <li class="topic-item" onclick="openLoginModal()">💡 Ideation & Brainstorming</li>
+                    <li class="topic-item" onclick="openLoginModal()">?? Study Session (On/Off Campus)</li>
+                    <li class="topic-item" onclick="openLoginModal()">? College Meetup (Casual)</li>
+                    <li class="topic-item" onclick="openLoginModal()">?? Group Video Conference</li>
+                    <li class="topic-item" onclick="openLoginModal()">?? Exam Prep & Review</li>
+                    <li class="topic-item" onclick="openLoginModal()">?? Project Collaboration</li>
+                    <li class="topic-item" onclick="openLoginModal()">?? Ideation & Brainstorming</li>
                 </ul>
             </div>
-            <button class="cta-button" style="margin-top: 30px;" onclick="openLoginModal()">Create Custom Meeting</button>
+            <button class="cta-button" onclick="openLoginModal()" style="margin-top: 30px;">Create Custom Meeting</button>
         </section>
 
         <section id="conference" class="content-division">
-            <h2 class="animated-heading">🌐 Cross-College Video Conferencing</h2>
-            <p>Connect with students from other colleges in your district and out of state.</p>
+            <h2 class="animated-heading">?? Cross-College Video Conferencing</h2>
+            
             <div class="conference-wrapper">
                 <div class="conference-box">
                     <h3>Host a New Meeting</h3>
                     <p>Start a spontaneous or scheduled video session for your group.</p>
-                    <button class="cta-button" style="background-color: var(--text-light); color: var(--accent-color); margin-top: 15px;">Start Room</button>
+                    <button class="cta-button">Start Room</button>
                 </div>
                 <div class="conference-box">
                     <h3>Join an Existing Meeting</h3>
                     <p>Enter a room ID or browse active sessions in the network.</p>
                     <input type="text" placeholder="Enter Room ID">
-                    <button class="cta-button" style="background-color: var(--text-light); color: var(--primary-color);">Join Conference</button>
+                    <button class="cta-button">Join Conference</button>
                 </div>
             </div>
         </section>
         
         <section id="contact" class="content-division">
-            <h2 class="animated-heading">📧 Contact Us</h2>
-            <p>Need support or want to partner? Reach out to the BrainLink team!</p>
+            <h2 class="animated-heading"></h2>
+            
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h1 class="main-heading">Get in Touch</h1>
+                    <p class="sub-heading">We'd like to hear from you!</p>
+
+                    <p class="intro-text">
+                        If you have any inquiries about BrainLink, need technical support, or want to discuss a potential partnership, please use the contact form or reach out directly!
+                    </p>
+
+                    <div class="contact-details">
+                        <div class="email-link">
+                            <span class="icon"><i class="fas fa-envelope"></i></span> 
+                            <a href="mailto:support@brainlink.com">support@brainlink.com</a>
+                        </div>
+                        
+                        <div class="social-links">
+                            <a class="icon" href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a> 
+                            <a class="icon" href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a> 
+                            <a class="icon" href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a> 
+                            <a class="icon" href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a> 
+                            <a class="icon" href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a> 
+                        </div>
+                    </div>
+                </div>
+
+                <form class="contact-form">
+                    <div class="form-row">
+                        <input type="text" id="first-name" name="first-name" placeholder="First Name">
+                        <input type="text" id="last-name" name="last-name" placeholder="Last Name">
+                    </div>
+
+                    <div class="form-row">
+                        <input type="email" id="email" name="email" placeholder="Email *" required>
+                    </div>
+
+                    <textarea id="message" name="message" placeholder="Your Message"></textarea>
+
+                    <button type="submit" class="send-button">Send Message</button>
+                </form>
+            </div>
         </section>
         
     </main>
-
+    
     <footer>
         <p>&copy; 2025 BrainLink. All rights reserved. | <a href="#">Privacy Policy</a></p>
-        <div class="social-links">
-            <a href="#" style="color: #3b5998;">F</a> 
-            <a href="#" style="color: #55acee;">T</a> 
-            <a href="#" style="color: #c32aa3;">I</a>
+        
+        <div class="powered-by-banner">
+            <p>Powered by Next-Gen Cloud Infrastructure and AI</p>
+            <div class="banner-logos">
+                <a href="#" class="icon-g"><i class="fas fa-search"></i></a> 
+                <a href="#" class="icon-a"><i class="fas fa-cloud"></i></a> 
+                <a href="#" class="icon-f"><i class="fas fa-palette"></i></a> 
+            </div>
         </div>
     </footer>
 
@@ -621,24 +1557,114 @@
             </form>
         </div>
     </div>
+    
+    <div id="notes-filter-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeNotesFilterModal()">&times;</span>
+            <h2 id="filter-modal-title">Browse Notes</h2>
+            <form class="notes-filter-form">
+                <p>Filter the extensive *BrainLink Library* by your academic stream.</p>
+                <div class="select-wrapper">
+                    <select id="branch-select" required>
+                        <option value="" disabled selected>Select Your Branch</option>
+                        <option value="CS">Computer Science</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="ECE">Electronics & Comm. Engg.</option>
+                        <option value="ME">Mechanical Engineering</option>
+                        <option value="CE">Civil Engineering</option>
+                    </select>
+                </div>
 
+                <div class="select-wrapper">
+                    <select id="year-select" required>
+                        <option value="" disabled selected>Select Your Year</option>
+                        <option value="1">First Year</option>
+                        <option value="2">Second Year</option>
+                        <option value="3">Third Year</option>
+                        <option value="4">Fourth Year</option>
+                    </select>
+                </div>
+
+
+                   <div class="select-wrapper">
+                        <select id="year-select" required>
+                            <option value="" disabled selected>Select Your Sem</option>
+                            <option value="1">First Sem</option>
+                            <option value="2">Second Sem</option>
+                            <option value="3">Third Sem</option>
+                            <option value="4">Fourth Sem</option>
+                        <option value="5">Fifth Sem</option>
+                            <option value="6">Sixth Sem</option>
+                        <option value="7">Seventh Sem</option>
+                        <option value="8">Eighth Sem</option>
+                        </select>
+                    </div>
+
+
+                <input type="text" placeholder="Subject / Module (e.g., Data Structures)" required>
+                
+                <button type="submit" class="cta-button" style="background: var(--accent-color);">
+                    Search Notes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="chat-widget">
+        
+        <button id="chat-icon">
+            <i class="fas fa-globe"></i>
+        </button>
+
+        <div id="chat-window" class="hidden">
+            <div id="chat-header">
+                <h3>BrainLink Support</h3>
+                <div class="header-controls">
+                    <button id="maximize-chat" title="Maximize">
+                        <i class="fas fa-expand-alt"></i>
+                    </button>
+                    <button id="close-chat"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <div id="chat-messages">
+                <div class="message received">
+                    <div class="avatar receiver-avatar">S</div>
+                    <div class="bubble">Welcome! How can I assist you with BrainLink today?</div>
+                </div>
+                <div class="message sent">
+                    <div class="bubble">I have a question about meeting hosting.</div>
+                    <div class="avatar sender-avatar">U</div>
+                </div>
+                <div class="message received">
+                    <div class="avatar receiver-avatar">S</div>
+                    <div class="bubble">Of course! Please describe your issue or question.</div>
+                </div>
+            </div>
+
+            <div id="chat-input-container">
+                <input type="file" id="image-upload" accept="image/*">
+                <label for="image-upload" id="image-upload-label" title="Upload Photo">
+                    <i class="fas fa-image"></i>
+                </label>
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="send-button" title="Send Message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
     <script>
         // --- Function to explicitly close the Sidebar Menu ---
         function closeSidebar() {
             const sidebar = document.getElementById("sidebar");
-            sidebar.style.width = "0";
             sidebar.classList.remove("open");
         }
         
         // --- Function to toggle the Sliding Sidebar Menu ---
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
-            // Check current width and if the 'open' class is present
-            if (sidebar.style.width === "250px") {
-                closeSidebar(); // Use the close function
+            if (sidebar.classList.contains("open")) {
+                closeSidebar();
             } else {
-                sidebar.style.width = "250px"; 
-                // Add class to trigger the staggered slide-in effect on links
                 sidebar.classList.add("open"); 
             }
         }
@@ -649,13 +1675,22 @@
             const menuIcon = document.querySelector(".menu-icon");
             const header = document.getElementById("main-header");
             const loginModal = document.getElementById("login-modal");
+            const notesModal = document.getElementById("notes-filter-modal"); 
+            const chatWindow = document.getElementById('chat-window'); 
+            const chatIcon = document.getElementById('chat-icon'); 
             
-            // Check if the sidebar is open
-            if (sidebar.style.width === "250px") {
-                // Check if the click is NOT inside the sidebar, NOT inside the menu icon, and NOT inside the main header buttons.
-                // We use closest to check if the target is within any of the defined elements.
-                if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && !header.contains(event.target) && !loginModal.contains(event.target)) {
+            if (sidebar.classList.contains("open")) {
+                if (!sidebar.contains(event.target) && !menuIcon.contains(event.target) && !header.contains(event.target) && !loginModal.contains(event.target) && !notesModal.contains(event.target)) {
                     closeSidebar();
+                }
+            }
+            
+            if (chatWindow.classList.contains('visible') && !chatWindow.classList.contains('maximized')) {
+                if (!chatWindow.contains(event.target) && !chatIcon.contains(event.target)) {
+                    if (event.target !== loginModal && event.target !== notesModal) {
+                        chatWindow.classList.remove('visible');
+                        setTimeout(() => chatWindow.classList.add('hidden'), 300);
+                    }
                 }
             }
         }
@@ -669,13 +1704,270 @@
             document.getElementById("login-modal").style.display = "none";
         }
 
+        // --- NEW Functions to handle the Notes Filter Modal ---
+        function openNotesFilterModal(noteType) {
+            const modal = document.getElementById("notes-filter-modal");
+            const title = document.getElementById("filter-modal-title");
+            
+            title.textContent = "Filter " + noteType;
+            
+            modal.style.display = "block";
+        }
+
+        function closeNotesFilterModal() {
+            document.getElementById("notes-filter-modal").style.display = "none";
+        }
+
         // Close the modal if the user clicks anywhere outside of it
         window.onclick = function(event) {
-            const modal = document.getElementById("login-modal");
-            if (event.target === modal) {
-                modal.style.display = "none";
+            const loginModal = document.getElementById("login-modal");
+            const notesModal = document.getElementById("notes-filter-modal");
+            const chatWindow = document.getElementById('chat-window');
+
+            if (event.target === loginModal) {
+                loginModal.style.display = "none";
+            }
+            
+            if (event.target === notesModal) {
+                notesModal.style.display = "none";
+            }
+            
+             // NEW: If clicking the backdrop of the chat window, close it (only if it's the chat backdrop, not another modal's)
+            if (event.target === chatWindow && chatWindow.classList.contains('visible')) {
+                 if (!chatWindow.classList.contains('maximized')) {
+                    chatWindow.classList.remove('visible');
+                    setTimeout(() => chatWindow.classList.add('hidden'), 300);
+                }
             }
         }
+        
+        
+        
+        // ==============================================
+        // --- CHAT WIDGET JAVASCRIPT (UPDATED) ---
+        // ==============================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get all necessary DOM elements for the chat
+            const chatIcon = document.getElementById('chat-icon');
+            const chatWindow = document.getElementById('chat-window');
+            const closeButton = document.getElementById('close-chat');
+            const maximizeButton = document.getElementById('maximize-chat'); // NEW
+            const sendButton = document.getElementById('send-button');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
+            const imageUpload = document.getElementById('image-upload');
+            const body = document.body; // Reference to the body element
+
+            // --- Sound Effects Setup ---
+            const soundClick = new Audio('https://www.soundjay.com/buttons/button-click-01.mp3'); 
+            const soundTick = new Audio('https://www.soundjay.com/misc/tick-01.mp3'); 
+
+            // Function to play a sound
+            const playSound = (audioElement) => {
+                audioElement.currentTime = 0; 
+                audioElement.play().catch(e => console.warn("Audio playback failed:", e)); 
+            };
+
+            // Function to scroll the message area to the bottom
+            const scrollToBottom = () => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            };
+            
+            // --- NEW: Maximize/Minimize Functionality ---
+            const toggleMaximize = () => {
+                const isMaximized = chatWindow.classList.toggle('maximized');
+                
+                // Toggle the body class to compress the main website content
+                body.classList.toggle('chat-maximized', isMaximized);
+                
+                // Change icon and title
+                const icon = maximizeButton.querySelector('i');
+                if (isMaximized) {
+                    icon.classList.remove('fa-expand-alt');
+                    icon.classList.add('fa-compress-alt'); // Minimize icon
+                    maximizeButton.title = "Minimize";
+                } else {
+                    icon.classList.remove('fa-compress-alt');
+                    icon.classList.add('fa-expand-alt'); // Maximize icon
+                    maximizeButton.title = "Maximize";
+                }
+
+                if (chatWindow.classList.contains('visible')) {
+                    scrollToBottom();
+                }
+                
+                playSound(soundClick);
+            };
+
+            // Attach event listener for maximize button
+            maximizeButton.addEventListener('click', toggleMaximize);
+
+
+            // --- Toggle Chat Window Visibility and Animation (MODIFIED) ---
+            const toggleChat = () => {
+                const isVisible = chatWindow.classList.contains('visible');
+
+                if (!isVisible) {
+                    // Open Chat
+                    chatWindow.classList.remove('hidden'); 
+                    void chatWindow.offsetWidth; // Trigger reflow for animation
+                    chatWindow.classList.add('visible');
+                    scrollToBottom();
+                    playSound(soundClick); 
+                } else {
+                    // Closing Chat: Ensure minimize state is restored if chat was maximized
+                    if (chatWindow.classList.contains('maximized')) {
+                        toggleMaximize(); 
+                    }
+
+                    // Close Chat
+                    chatWindow.classList.remove('visible');
+                    setTimeout(() => {
+                        chatWindow.classList.add('hidden');
+                    }, 300); // Wait for animation to finish
+                    playSound(soundClick); 
+                }
+            };
+
+            // Attach event listeners
+            chatIcon.addEventListener('click', toggleChat);
+            closeButton.addEventListener('click', toggleChat);
+
+            // --- Message Sending Functionality (Text) ---
+            const sendMessage = (messageText) => {
+                if (!messageText.trim()) {
+                    return; // Don't send empty messages
+                }
+
+                const newMessageHTML = `
+                    <div class="message sent">
+                        <div class="bubble">${messageText}</div>
+                        <div class="avatar sender-avatar">U</div>
+                    </div>
+                `;
+
+                chatMessages.insertAdjacentHTML('beforeend', newMessageHTML);
+                playSound(soundTick); // Play tick sound on send
+
+                chatInput.value = ''; // Clear text input
+                scrollToBottom();
+
+                // Simulate a bot response after a short delay
+                setTimeout(simulateResponse, 1500);
+            };
+
+            // Event listener for send button
+            sendButton.addEventListener('click', () => {
+                sendMessage(chatInput.value);
+            });
+
+            // Event listener for 'Enter' key press
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage(chatInput.value);
+                }
+            });
+
+            // --- Image Upload Functionality ---
+            imageUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+
+                if (!file || !file.type.startsWith('image/')) {
+                    console.error('Please upload an image file (e.g., JPEG, PNG, GIF).');
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const imageUrl = e.target.result;
+                    const imageMessageHTML = `
+                        <div class="message sent">
+                            <div class="bubble"><img src="${imageUrl}" alt="Uploaded Image"></div>
+                            <div class="avatar sender-avatar">U</div>
+                        </div>
+                    `;
+                    chatMessages.insertAdjacentHTML('beforeend', imageMessageHTML);
+                    playSound(soundTick); // Play tick sound for image too
+                    scrollToBottom();
+
+                    // Simulate a bot response after image upload
+                    setTimeout(simulateResponse, 1500);
+                };
+
+                reader.readAsDataURL(file); // Read the file as a data URL (base64 encoded)
+                imageUpload.value = ''; // Clear the input so same file can be chosen again
+            });
+
+
+            // --- Utility: Simulates a bot response ---
+            const simulateResponse = () => {
+                const botMessageHTML = `
+                    <div class="message received">
+                        <div class="avatar receiver-avatar">S</div>
+                        <div class="bubble">I've received your query. A human agent is checking in now.</div>
+                    </div>
+                `;
+                chatMessages.insertAdjacentHTML('beforeend', botMessageHTML);
+                playSound(soundTick); // Play tick sound on receive
+                scrollToBottom();
+            };
+            
+            // ==============================================
+            // --- INTEGRATED TEXT CHANGER JAVASCRIPT ---
+            // ==============================================
+            
+            // The array of texts to cycle through (10 items)
+            const texts = [
+                "Connect the dots",
+                "What's happening now?",
+                "Follow your goals",
+                "Never ever turn back",
+                "What on earth is going on?",
+                "Get up and grind",
+                "Expect the unexpected",
+                "One day",
+                "It will happen for sure",
+                "All these efforts will matter that day"
+            ];
+
+            let currentTextIndex = 0;
+            const displayElement = document.getElementById('changingText');
+            // Set the interval time in milliseconds (e.g., 3000ms = 3 seconds)
+            const intervalTime = 3000; 
+            // Must match the CSS transition time
+            const transitionTime = 500;
+
+            function changeText() {
+                // 1. Temporarily hide the text (opacity 0)
+                displayElement.style.opacity = 0;
+
+                // 2. Use a delay to wait for the hide transition to finish
+                setTimeout(() => {
+                    // 3. Update the text content
+                    displayElement.textContent = texts[currentTextIndex];
+
+                    // 4. Show the new text (opacity 1)
+                    displayElement.style.opacity = 1;
+
+                    // 5. Move to the next text, wrapping back to 0 if it exceeds the array length
+                    currentTextIndex = (currentTextIndex + 1) % texts.length;
+
+                }, transitionTime); 
+            }
+
+            // Check if the element exists before manipulating it
+            if (displayElement) {
+                // Set the initial text and start the loop
+                displayElement.textContent = texts[0];
+                currentTextIndex = 1; // Start the counter for the next text
+
+                // Start the text changing sequence to run every 3 seconds
+                setInterval(changeText, intervalTime);
+            }
+        });
+        
     </script>
 </body>
 </html>
