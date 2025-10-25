@@ -65,10 +65,12 @@
             background-color: rgba(33, 37, 41, 0.98); /* Near-opaque */
         }
         
-        /* Hero section is transparent to show the moving background */
+        /* Hero section has a solid background to HIDE the animation */
         .hero-section {
-            background: transparent; 
+            /* This gradient matches the body::before overlay, hiding the particles */
+            background: radial-gradient(circle at center, rgba(17, 20, 23, 0.95) 0%, rgba(17, 20, 23, 1) 100%);
         }
+
 
         /* --- MODIFICATION 1: About Us Section Background Removal --- */
         .about-us-container {
@@ -369,11 +371,10 @@
         }
 
         .hero-section {
-            height: 80vh; 
+            height: 90vh; 
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+	    align-items: center;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -388,9 +389,13 @@
         .hero-content h1 {
             font-size: 3.5rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            /* margin-bottom: 15px; (Original) */
             color: var(--text-light);
             animation: text-pop 1s ease-out 0.5s backwards;
+            /* ************ MODIFIED HERE ************ */
+            margin-bottom: 10px; 
+            margin-top: 30px;
+            /* *************************************** */
         }
 
         .hero-content p {
@@ -706,6 +711,7 @@
             border-radius: 10px;
             position: relative;
             animation: slide-down 0.5s ease-out; 
+            overflow: hidden; /* To contain absolute elements if any */
         }
         
         /* --- NEW: Specific Notes Filter Modal Animation (Existing) --- */
@@ -715,7 +721,12 @@
         }
         
         /* --- Form Input Styles (General for modals) (Existing) --- */
-        .login-form input, .notes-filter-form select, .notes-filter-form button {
+        .login-form input, 
+        .notes-filter-form select, 
+        .notes-filter-form button,
+        .otp-step input, 
+        .final-step input, 
+        .final-step select { /* Added new step inputs */
             width: 100%;
             padding: 15px;
             margin: 10px 0;
@@ -730,7 +741,11 @@
             appearance: none;
         }
 
-        .login-form input:focus, .notes-filter-form select:focus {
+        .login-form input:focus, 
+        .notes-filter-form select:focus,
+        .otp-step input:focus,
+        .final-step input:focus,
+        .final-step select:focus {
             border-color: var(--accent-color);
             box-shadow: 0 0 8px rgba(255, 64, 129, 0.6);
             outline: none;
@@ -768,6 +783,71 @@
         .close-btn:hover {
             color: var(--primary-color);
         }
+        
+        /* ============================================== */
+        /* --- MULTI-STEP LOGIN STYLES (NEW) --- */
+        /* ============================================== */
+        .login-step {
+            display: none;
+            padding: 10px 0;
+            animation: fade-in 0.5s ease-out;
+        }
+        
+        #register-step-1 { display: block; } /* Initial Step */
+        
+        /* OTP Specific Styles */
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .otp-input-group input {
+            width: 15%;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 10px 0;
+        }
+        
+        .resend-text {
+            text-align: center;
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .resend-link {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .resend-link:hover {
+            color: var(--accent-color);
+        }
+
+        /* Success Message Style */
+        .success-message {
+            text-align: center;
+            padding: 30px 10px;
+        }
+        
+        .success-message i {
+            font-size: 4rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            animation: text-pop 0.5s ease-out;
+        }
+        
+        .success-message h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        /* ============================================== */
+
 
         /* Responsive adjustments (Existing) */
         @media (max-width: 900px) {
@@ -1049,7 +1129,8 @@
             justify-content: center;
             align-items: center;
             padding: 0 5%;
-            margin-top: 30px; 
+            /* Decreased margin to close gap */
+            margin-top: 20px; 
         }
 
         /* The Animated Border Effect (The key) */
@@ -1251,7 +1332,20 @@
             background-color: #2b3035; 
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            
+            /* ************ MODIFIED HERE ************ */
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            /* *************************************** */
         }
+        
+        /* ************ NEW RULE ADDED HERE ************ */
+        .contact-form:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-color); 
+            box-shadow: 0 15px 40px rgba(255, 64, 129, 0.5);
+        }
+        /* ********************************************* */
 
         .form-row {
             display: flex;
@@ -1346,7 +1440,9 @@
         /* --- INTEGRATED TEXT CHANGER STYLES (UPDATED) --- */
         /* ================================================= */
         .text-changer-container {
+            /* ************ MODIFIED HERE ************ */
             margin-top: -15px; 
+            /* *************************************** */
             margin-bottom: 20px;
             padding: 0; 
             border-radius: 0; 
@@ -1396,11 +1492,11 @@
         <section id="home" class="hero-section">
             <div class="hero-content">
                 <h1>Connect, Study, Achieve.</h1>
-                <p>Your State-of-the-Art College Collaboration Platform.</p>
                
                 <div class="text-changer-container">
                     <p id="changingText">Initializing...</p>
                 </div>
+                
                 <div class="search-bar-wrapper">
                     <div class="search-container">
                         <div class="search-content">
@@ -1547,14 +1643,65 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeLoginModal()">&times;</span>
             <h2>BrainLink Access</h2>
-            <form class="login-form">
-                <h3>Register Now</h3>
-                <input type="text" placeholder="Full Name" required>
-                <input type="tel" placeholder="Phone Number" required>
-                <input type="email" placeholder="Email Address" required>
-                <input type="password" placeholder="Set Password" required>
-                <button type="submit" class="cta-button">Register Account</button>
-            </form>
+
+            <div id="register-step-1" class="login-step">
+                <form class="login-form">
+                    <h3>Register Now</h3>
+                    <input type="text" id="reg-name" placeholder="Full Name" required>
+                    <input type="email" id="reg-email" placeholder="Email Address" required>
+                    <button type="button" class="cta-button" onclick="showOtpStep()">
+                        Register Account
+                    </button>
+                </form>
+            </div>
+            
+            <div id="otp-step" class="login-step">
+                <h3>Verify Your Email</h3>
+                <p>An OTP has been sent to your email address. Please check your inbox.</p>
+                
+                <div class="otp-input-group">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-input">
+                </div>
+                
+                <p class="resend-text">Didn't receive it? <a href="#" class="resend-link">Resend Code</a></p>
+                
+                <button type="button" class="cta-button" onclick="showFinalStep()" style="background: var(--accent-color);">
+                    Verify & Continue
+                </button>
+            </div>
+            
+            <div id="final-step" class="login-step">
+                <h3>Finalize Your Profile</h3>
+                <input type="text" id="final-name" placeholder="Full Name" disabled>
+                
+                <p style="text-align: left; margin: 15px 0 5px 0; font-size: 0.9em;">Select Your College:</p>
+                <div class="select-wrapper">
+                    <select id="college-select" required>
+                        <option value="" disabled selected>Choose a College</option>
+                        <option value="C1">State University of Technology</option>
+                        <option value="C2">Metropolitan College of Engineering</option>
+                        <option value="C3">Northern Arts & Sciences Institute</option>
+                        <option value="C4">Pacific Tech Academy</option>
+                        <option value="C5">Global Institute of Research</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="cta-button" onclick="showSuccessStep()">
+                    Complete Registration
+                </button>
+            </div>
+            
+            <div id="success-step" class="login-step success-message">
+                <i class="fas fa-check-circle"></i>
+                <h3>Login Successful!</h3>
+                <p>Welcome to the BrainLink network.</p>
+            </div>
+
         </div>
     </div>
     
@@ -1587,7 +1734,7 @@
 
 
                    <div class="select-wrapper">
-                        <select id="year-select" required>
+                        <select id="sem-select" required>
                             <option value="" disabled selected>Select Your Sem</option>
                             <option value="1">First Sem</option>
                             <option value="2">Second Sem</option>
@@ -1653,6 +1800,10 @@
         </div>
     </div>
     <script>
+        // --- Global Variables for Registration Process ---
+        let registrationFullName = '';
+        let registrationEmail = '';
+
         // --- Function to explicitly close the Sidebar Menu ---
         function closeSidebar() {
             const sidebar = document.getElementById("sidebar");
@@ -1698,10 +1849,80 @@
         // --- Functions to handle the Login/Registration Modal ---
         function openLoginModal() {
             document.getElementById("login-modal").style.display = "block";
+            // Ensure we start at Step 1 every time
+            document.querySelectorAll('.login-step').forEach(step => step.style.display = 'none');
+            document.getElementById('register-step-1').style.display = 'block';
         }
 
         function closeLoginModal() {
             document.getElementById("login-modal").style.display = "none";
+        }
+        
+        // --- NEW Functions for Multi-Step Login ---
+        
+        function showOtpStep() {
+            const nameField = document.getElementById('reg-name');
+            const emailField = document.getElementById('reg-email');
+
+            if (!nameField.value.trim() || !emailField.value.trim()) {
+                alert("Please enter both your Full Name and Email Address.");
+                return;
+            }
+            
+            // Store data for later use
+            registrationFullName = nameField.value;
+            registrationEmail = emailField.value;
+            
+            // Hide all steps and show only the OTP step
+            document.querySelectorAll('.login-step').forEach(step => step.style.display = 'none');
+            document.getElementById('otp-step').style.display = 'block';
+            
+            // Focus on the first OTP input
+            document.querySelector('.otp-input').focus();
+            
+            // Optional: Simulate OTP send logic here
+            console.log(`Simulating OTP sent to: ${registrationEmail}`);
+        }
+        
+        function showFinalStep() {
+            // In a real app, you would verify the OTP here.
+            // For now, we simulate success and proceed.
+            const otpInputs = document.querySelectorAll('.otp-input');
+            let otpValid = true;
+            otpInputs.forEach(input => {
+                if (input.value.length !== 1) otpValid = false;
+            });
+
+            if (!otpValid) {
+                 alert("Please enter the full 6-digit OTP.");
+                 return;
+            }
+
+            // Hide all steps and show only the Final step
+            document.querySelectorAll('.login-step').forEach(step => step.style.display = 'none');
+            document.getElementById('final-step').style.display = 'block';
+            
+            // Pre-fill the full name field
+            document.getElementById('final-name').value = registrationFullName;
+        }
+
+        function showSuccessStep() {
+            const collegeSelect = document.getElementById('college-select');
+
+            if (!collegeSelect.value) {
+                alert("Please select your College to complete registration.");
+                return;
+            }
+            
+            // In a real application, you would send all collected data to a server here:
+            console.log(`Registration Complete: Name: ${registrationFullName}, Email: ${registrationEmail}, College: ${collegeSelect.value}`);
+
+            // Hide all steps and show only the Success step
+            document.querySelectorAll('.login-step').forEach(step => step.style.display = 'none');
+            document.getElementById('success-step').style.display = 'block';
+            
+            // Close the modal after a short delay
+            setTimeout(closeLoginModal, 2000); 
         }
 
         // --- NEW Functions to handle the Notes Filter Modal ---
@@ -1725,7 +1946,11 @@
             const chatWindow = document.getElementById('chat-window');
 
             if (event.target === loginModal) {
-                loginModal.style.display = "none";
+                // Check if the current visible step is the success message, if so, close.
+                // Otherwise, prevent closure to keep the user in the middle of registration.
+                if (document.getElementById('success-step').style.display === 'block') {
+                     loginModal.style.display = "none";
+                }
             }
             
             if (event.target === notesModal) {
@@ -1752,12 +1977,13 @@
             const chatIcon = document.getElementById('chat-icon');
             const chatWindow = document.getElementById('chat-window');
             const closeButton = document.getElementById('close-chat');
-            const maximizeButton = document.getElementById('maximize-chat'); // NEW
+            const maximizeButton = document.getElementById('maximize-chat'); 
             const sendButton = document.getElementById('send-button');
             const chatInput = document.getElementById('chat-input');
             const chatMessages = document.getElementById('chat-messages');
             const imageUpload = document.getElementById('image-upload');
             const body = document.body; // Reference to the body element
+            const otpInputs = document.querySelectorAll('.otp-input'); // NEW OTP inputs
 
             // --- Sound Effects Setup ---
             const soundClick = new Audio('https://www.soundjay.com/buttons/button-click-01.mp3'); 
@@ -1768,6 +1994,28 @@
                 audioElement.currentTime = 0; 
                 audioElement.play().catch(e => console.warn("Audio playback failed:", e)); 
             };
+            
+            // --- NEW: OTP Input Logic for Auto-Focus ---
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    // Automatically move to the next input if a digit is entered
+                    if (e.data && e.data.length === 1 && !isNaN(e.data)) {
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        }
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    // Handle backspace to move to the previous input
+                    if (e.key === 'Backspace' && input.value === '') {
+                        if (index > 0) {
+                            otpInputs[index - 1].focus();
+                        }
+                    }
+                });
+            });
+
 
             // Function to scroll the message area to the bottom
             const scrollToBottom = () => {
